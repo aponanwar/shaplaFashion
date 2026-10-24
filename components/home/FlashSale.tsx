@@ -57,7 +57,7 @@ const DEMO_PRODUCTS: FlashProduct[] = [
     price: 1200,
     salePrice: 840,
     discount: 30,
-    images: ['https://images.unsplash.com/photo-1594938298603-c8148c4b4f28?w=400&q=80'],
+    images: ['https://images.unsplash.com/photo-1597983073493-88cd35cf93b0?w=600&q=80'],
     slug: 'block-print-kurti',
     stock: 7,
   },
@@ -129,12 +129,15 @@ function CountdownBlock({ value, label }: { value: number; label: string }) {
 // ─── Product Card Skeleton ─────────────────────────────────────────────────────
 function FlashProductSkeleton() {
   return (
-    <div className="min-w-[180px] sm:min-w-[210px] w-[180px] sm:w-[210px] flex-shrink-0 rounded-2xl overflow-hidden bg-white shadow-card border border-gray-100 animate-pulse">
-      <div className="h-48 bg-gray-200" />
-      <div className="p-3 space-y-2">
-        <div className="h-4 bg-gray-200 rounded w-3/4" />
-        <div className="h-4 bg-gray-200 rounded w-1/2" />
-        <div className="h-8 bg-gray-100 rounded" />
+    <div className="w-[180px] sm:w-full min-w-[180px] sm:min-w-0 flex-shrink-0 sm:flex-shrink rounded-2xl overflow-hidden bg-white shadow-card border border-gray-100 animate-pulse flex flex-col h-full">
+      <div className="h-44 sm:h-48 bg-gray-200 shrink-0" />
+      <div className="p-3 sm:p-3.5 flex flex-col flex-1 justify-between space-y-2">
+        <div className="space-y-1.5">
+          <div className="h-3.5 sm:h-4 bg-gray-200 rounded w-4/5" />
+          <div className="h-3.5 sm:h-4 bg-gray-200 rounded w-3/5" />
+          <div className="h-4 bg-gray-200 rounded w-1/2 mt-2" />
+        </div>
+        <div className="h-8 sm:h-9 bg-gray-100 rounded-xl mt-auto" />
       </div>
     </div>
   );
@@ -145,13 +148,16 @@ function FlashProductCard({ product }: { product: FlashProduct }) {
   const addItem = useCartStore((s) => s.addItem);
   const [added, setAdded] = useState(false);
   const [wished, setWished] = useState(false);
+  const [imageSrc, setImageSrc] = useState(
+    product.images[0] || 'https://images.unsplash.com/photo-1597983073493-88cd35cf93b0?w=600&q=80'
+  );
 
   const handleAddToCart = () => {
     addItem({
       productId: product._id,
       name: product.name,
       price: product.salePrice ?? product.price,
-      image: product.images[0],
+      image: imageSrc,
       slug: product.slug,
       quantity: 1,
     });
@@ -162,32 +168,33 @@ function FlashProductCard({ product }: { product: FlashProduct }) {
   const discountPct = product.discount ?? Math.round((1 - (product.salePrice ?? product.price) / product.price) * 100);
 
   return (
-    <div className="min-w-[180px] sm:min-w-[210px] w-[180px] sm:w-[210px] flex-shrink-0 rounded-2xl overflow-hidden bg-white shadow-card hover:shadow-product-hover border border-gray-100 transition-shadow duration-300 group">
+    <div className="w-[180px] sm:w-full min-w-[180px] sm:min-w-0 flex-shrink-0 sm:flex-shrink flex flex-col h-full rounded-2xl overflow-hidden bg-white shadow-card hover:shadow-product-hover border border-gray-100 transition-all duration-300 group">
       {/* Image */}
-      <Link href={`/products/${product.slug}`} className="relative block h-48 overflow-hidden">
+      <Link href={`/products/${product.slug}`} className="relative block w-full h-44 sm:h-48 overflow-hidden bg-gray-50 shrink-0">
         <Image
-          src={product.images[0]}
+          src={imageSrc}
           alt={product.name}
           fill
           className="object-cover object-center transition-transform duration-500 group-hover:scale-105"
-          sizes="210px"
+          sizes="(max-width: 640px) 180px, (max-width: 1024px) 33vw, 16vw"
+          onError={() => setImageSrc('https://images.unsplash.com/photo-1597983073493-88cd35cf93b0?w=600&q=80')}
         />
         {/* Discount badge */}
         {discountPct > 0 && (
-          <span className="absolute top-2 left-2 bg-primary-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
+          <span className="absolute top-2 left-2 bg-primary-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full z-10 shadow-sm">
             -{discountPct}%
           </span>
         )}
         {/* Stock warning */}
         {product.stock <= 5 && (
-          <span className="absolute bottom-2 left-2 bg-amber-500/90 text-white text-[10px] font-semibold px-2 py-0.5 rounded-full">
+          <span className="absolute bottom-2 left-2 bg-amber-500/90 text-white text-[10px] font-semibold px-2 py-0.5 rounded-full z-10 shadow-sm">
             Only {product.stock} left!
           </span>
         )}
         {/* Wishlist button */}
         <button
           onClick={(e) => { e.preventDefault(); setWished((w) => !w); }}
-          className="absolute top-2 right-2 w-7 h-7 bg-white/80 hover:bg-white rounded-full flex items-center justify-center shadow transition-all duration-200 opacity-0 group-hover:opacity-100"
+          className="absolute top-2 right-2 w-7 h-7 bg-white/90 hover:bg-white rounded-full flex items-center justify-center shadow transition-all duration-200 opacity-0 group-hover:opacity-100 z-10"
           aria-label="Add to wishlist"
         >
           <FiHeart className={`w-3.5 h-3.5 ${wished ? 'fill-primary-600 text-primary-600' : 'text-gray-600'}`} />
@@ -195,27 +202,29 @@ function FlashProductCard({ product }: { product: FlashProduct }) {
       </Link>
 
       {/* Info */}
-      <div className="p-3">
-        <Link href={`/products/${product.slug}`}>
-          <h3 className="text-sm font-semibold text-gray-800 leading-snug line-clamp-2 hover:text-primary-600 transition-colors">
-            {product.name}
-          </h3>
-        </Link>
-        {/* Pricing */}
-        <div className="flex items-baseline gap-2 mt-1.5 mb-2.5">
-          <span className="text-primary-600 font-bold text-base">
-            ৳{(product.salePrice ?? product.price).toLocaleString()}
-          </span>
-          {product.salePrice && (
-            <span className="text-gray-400 text-xs line-through">
-              ৳{product.price.toLocaleString()}
+      <div className="p-3 sm:p-3.5 flex flex-col flex-1 justify-between">
+        <div>
+          <Link href={`/products/${product.slug}`} className="block">
+            <h3 className="text-xs sm:text-sm font-semibold text-gray-800 leading-snug line-clamp-2 h-9 sm:h-10 hover:text-primary-600 transition-colors">
+              {product.name}
+            </h3>
+          </Link>
+          {/* Pricing */}
+          <div className="flex items-baseline gap-1.5 sm:gap-2 mt-2 mb-3">
+            <span className="text-primary-600 font-bold text-sm sm:text-base">
+              ৳{(product.salePrice ?? product.price).toLocaleString()}
             </span>
-          )}
+            {product.salePrice && (
+              <span className="text-gray-400 text-[11px] sm:text-xs line-through">
+                ৳{product.price.toLocaleString()}
+              </span>
+            )}
+          </div>
         </div>
         {/* Add to cart */}
         <button
           onClick={handleAddToCart}
-          className={`w-full flex items-center justify-center gap-1.5 py-2 rounded-xl text-xs font-bold transition-all duration-200 ${
+          className={`w-full mt-auto flex items-center justify-center gap-1.5 py-2 sm:py-2.5 rounded-xl text-xs font-bold transition-all duration-200 ${
             added
               ? 'bg-green-500 text-white'
               : 'bg-primary-600 hover:bg-primary-700 text-white active:scale-95'
@@ -278,9 +287,9 @@ export default function FlashSale({ products, loading = false }: FlashSaleProps)
           </Link>
         </div>
 
-        {/* Horizontal scroll product strip */}
+        {/* Responsive grid / mobile horizontal scroll product strip */}
         <div className="overflow-x-auto pb-4 -mx-4 px-4 sm:mx-0 sm:px-0 scrollbar-hide">
-          <div className="flex gap-3 sm:gap-4 w-max sm:w-full sm:grid sm:grid-cols-3 lg:grid-cols-6 sm:w-auto">
+          <div className="flex sm:grid sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4 min-w-max sm:min-w-0 w-full items-stretch">
             {loading
               ? Array.from({ length: 6 }).map((_, i) => <FlashProductSkeleton key={i} />)
               : displayProducts.map((p) => (

@@ -68,7 +68,7 @@ const DEMO_PRODUCTS: Product[] = [
     _id: 'fp5',
     name: 'Floral Block-Print Kurti',
     price: 980,
-    images: ['https://images.unsplash.com/photo-1594938298603-c8148c4b4f28?w=500&q=80'],
+    images: ['https://images.unsplash.com/photo-1597983073493-88cd35cf93b0?w=500&q=80'],
     slug: 'floral-block-print-kurti',
     category: 'Clothes',
     rating: 4.5,

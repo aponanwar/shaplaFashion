@@ -23,7 +23,7 @@ const categories = [
   {
     name: 'Kurti',
     slug: 'kurti',
-    image: 'https://images.unsplash.com/photo-1594938298603-c8148c4b4f28?w=600&q=80',
+    image: 'https://images.unsplash.com/photo-1597983073493-88cd35cf93b0?w=600&q=80',
     count: '95+ styles',
     emoji: '👗',
   },
