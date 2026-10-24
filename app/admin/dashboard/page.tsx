@@ -22,6 +22,7 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from 'recharts';
+import AdminStatusBar from '@/components/admin/AdminStatusBar';
 
 const SALES_DATA = [
   { day: 'Sat', sales: 12500, orders: 8 },
@@ -83,7 +84,10 @@ const LOW_STOCK_ITEMS = [
 
 export default function AdminDashboardPage() {
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
+      {/* Live Status Bar: MongoDB Connection & Visitors Counter */}
+      <AdminStatusBar />
+
       {/* Metrics Row */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
         {/* Metric 1 */}

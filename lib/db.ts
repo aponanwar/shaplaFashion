@@ -5,12 +5,7 @@
 
 import mongoose from 'mongoose';
 
-const MONGODB_URI = process.env.MONGODB_URI!;
 const MONGODB_DB_NAME = process.env.MONGODB_DB_NAME || 'shapla_fashion';
-
-if (!MONGODB_URI) {
-  throw new Error('Please define MONGODB_URI in .env.local');
-}
 
 interface MongooseCache {
   conn: typeof mongoose | null;
@@ -30,8 +25,13 @@ global.mongooseCache = cached;
 export async function connectDB(): Promise<typeof mongoose> {
   if (cached.conn) return cached.conn;
 
+  const uri = process.env.MONGODB_URI;
+  if (!uri) {
+    throw new Error('Please define MONGODB_URI in .env.local or Vercel Environment Variables');
+  }
+
   if (!cached.promise) {
-    cached.promise = mongoose.connect(MONGODB_URI, {
+    cached.promise = mongoose.connect(uri, {
       dbName: MONGODB_DB_NAME,
       // Free tier optimization — keep pool small
       maxPoolSize: 10,
