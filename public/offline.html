@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>অফলাইন | Shapla Fashion</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
+    body { background-color: #f9fafb; color: #111827; display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; text-align: center; }
+    .card { background: white; border-radius: 24px; padding: 40px 24px; max-width: 420px; width: 100%; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05); border: 1px solid #e5e7eb; }
+    .icon { width: 64px; height: 64px; border-radius: 20px; background: #fee2e2; color: #dc2626; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; font-size: 32px; }
+    h1 { font-size: 22px; font-weight: 800; color: #111827; margin-bottom: 8px; }
+    p { font-size: 14px; color: #6b7280; line-height: 1.5; margin-bottom: 24px; }
+    .btn { display: inline-block; width: 100%; background: #C41E3A; color: white; padding: 14px 24px; border-radius: 14px; text-decoration: none; font-weight: 700; font-size: 14px; border: none; cursor: pointer; transition: background 0.2s; }
+    .btn:hover { background: #a01530; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="icon">📡</div>
+    <h1>আপনি অফলাইনে আছেন</h1>
+    <p>ইন্টারনেট সংযোগ বিচ্ছিন্ন হয়েছে। অনুগ্রহ করে আপনার ডাটা বা ওয়াই-ফাই সংযোগ চেক করে আবার চেষ্টা করুন।</p>
+    <button class="btn" onclick="window.location.reload()">পুনরায় চেষ্টা করুন</button>
+  </div>
+</body>
+</html>

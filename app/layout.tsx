@@ -2,6 +2,8 @@
 import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import { Providers } from './providers';
+import PwaRegister from '@/components/common/PwaRegister';
+import InstallPwaPrompt from '@/components/common/InstallPwaPrompt';
 
 export const metadata: Metadata = {
   title: {
@@ -13,6 +15,12 @@ export const metadata: Metadata = {
   keywords: ['bangladeshi clothes', 'handloom saree', 'jamdani', 'homemade crafts', 'online shop bangladesh'],
   authors: [{ name: 'Shapla Fashion' }],
   creator: 'Shapla Fashion',
+  manifest: '/manifest.webmanifest',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'default',
+    title: 'Shapla Fashion',
+  },
   openGraph: {
     type: 'website',
     locale: 'en_BD',
@@ -30,7 +38,7 @@ export const metadata: Metadata = {
   robots: { index: true, follow: true },
   icons: {
     icon: '/favicon.ico',
-    apple: '/apple-touch-icon.png',
+    apple: '/icons/apple-touch-icon.png',
   },
 };
 
@@ -49,7 +57,11 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className="font-sans" suppressHydrationWarning>
-        <Providers>{children}</Providers>
+        <Providers>
+          <PwaRegister />
+          {children}
+          <InstallPwaPrompt />
+        </Providers>
       </body>
     </html>
   );
