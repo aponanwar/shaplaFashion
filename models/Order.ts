@@ -43,6 +43,16 @@ export interface IOrder extends Document {
   orderStatus: OrderStatus;
   statusHistory: { status: OrderStatus; note?: string; timestamp: Date }[];
   trackingNumber?: string;
+  isPhoneVerified?: boolean;
+  orderSource?: 'web' | 'whatsapp' | 'manual';
+  courier?: {
+    provider: 'steadfast' | 'pathao' | 'redx' | 'custom';
+    consignmentId?: string;
+    trackingCode?: string;
+    trackingUrl?: string;
+    status?: string;
+    shippedAt?: Date;
+  };
   note?: string;
   smsSent: boolean;
   whatsappSent: boolean;
@@ -99,6 +109,16 @@ const OrderSchema = new Schema<IOrder>(
       },
     ],
     trackingNumber: { type: String },
+    isPhoneVerified: { type: Boolean, default: false },
+    orderSource: { type: String, enum: ['web', 'whatsapp', 'manual'], default: 'web' },
+    courier: {
+      provider: { type: String, enum: ['steadfast', 'pathao', 'redx', 'custom'] },
+      consignmentId: { type: String },
+      trackingCode: { type: String },
+      trackingUrl: { type: String },
+      status: { type: String },
+      shippedAt: { type: Date },
+    },
     note: { type: String, maxlength: 500 },
     smsSent: { type: Boolean, default: false },
     whatsappSent: { type: Boolean, default: false },

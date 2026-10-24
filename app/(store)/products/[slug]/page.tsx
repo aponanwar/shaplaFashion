@@ -17,6 +17,7 @@ import ProductImageGallery from '@/components/product/ProductImageGallery';
 import SizeColorPicker from '@/components/product/SizeColorPicker';
 import ReviewSection from '@/components/product/ReviewSection';
 import { StarRating } from '@/components/ui/StarRating';
+import WhatsAppQuickOrderModal from '@/components/product/WhatsAppQuickOrderModal';
 import { useCartStore } from '@/store/cartStore';
 import { useWishlistStore } from '@/store/wishlistStore';
 import { formatCurrency, calculateDiscount } from '@/lib/utils';
@@ -142,6 +143,7 @@ export default function ProductDetailPage({ params }: { params: { slug: string }
   const [selectedColor, setSelectedColor] = useState<string>(product.colors?.[0] || '');
   const [quantity, setQuantity] = useState<number>(1);
   const [activeTab, setActiveTab] = useState<'desc' | 'reviews' | 'delivery'>('desc');
+  const [isQuickOrderOpen, setIsQuickOrderOpen] = useState(false);
 
   const addItem = useCartStore((s) => s.addItem);
   const openCart = useCartStore((s) => s.openCart);
@@ -302,14 +304,14 @@ export default function ProductDetailPage({ params }: { params: { slug: string }
                 </button>
               </div>
 
-              {/* Direct WhatsApp Order */}
+              {/* Direct WhatsApp Quick Order */}
               <button
                 type="button"
-                onClick={handleWhatsAppOrder}
-                className="w-full py-3 px-6 rounded-xl bg-green-50 text-green-700 hover:bg-green-100 border border-green-300 font-bold text-sm flex items-center justify-center gap-2 transition-colors"
+                onClick={() => setIsQuickOrderOpen(true)}
+                className="w-full py-3.5 px-6 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-sm flex items-center justify-center gap-2 shadow-md shadow-emerald-600/20 transition-all active:scale-95"
               >
-                <FaWhatsapp className="text-green-600 text-lg" />
-                <span>Order via WhatsApp Direct</span>
+                <FaWhatsapp className="text-xl" />
+                <span>১-ক্লিক দ্রুত অর্ডার (WhatsApp)</span>
               </button>
 
               <div className="flex items-center justify-center gap-6 pt-2">
@@ -431,6 +433,16 @@ export default function ProductDetailPage({ params }: { params: { slug: string }
           )}
         </div>
       </div>
+
+      {/* 1-Click WhatsApp Quick Order Modal */}
+      <WhatsAppQuickOrderModal
+        isOpen={isQuickOrderOpen}
+        onClose={() => setIsQuickOrderOpen(false)}
+        product={product}
+        selectedSize={selectedSize}
+        selectedColor={selectedColor}
+        quantity={quantity}
+      />
     </div>
   );
 }

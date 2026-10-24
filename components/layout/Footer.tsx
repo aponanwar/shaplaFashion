@@ -186,8 +186,8 @@ export default function Footer() {
             </h3>
             <ul className="space-y-2.5 text-sm">
               <li>
-                <Link href="/orders" className="hover:text-primary-600 transition-colors">
-                  Track Your Order
+                <Link href="/track-order" className="hover:text-primary-600 transition-colors font-semibold text-primary-600">
+                  Track Your Order (লাইভ ট্র্যাকিং)
                 </Link>
               </li>
               <li>

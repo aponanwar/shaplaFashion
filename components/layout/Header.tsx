@@ -46,6 +46,7 @@ const NAV_ITEMS = [
   },
   { label: 'Sale', key: 'sale', href: '/sale', badge: 'HOT', badgeColor: 'bg-primary-600' },
   { label: 'New Arrivals', key: 'new-arrivals', href: '/new-arrivals', badge: 'NEW', badgeColor: 'bg-gold-500' },
+  { label: 'Track Order', key: 'track-order', href: '/track-order', badge: 'LIVE', badgeColor: 'bg-blue-600' },
   { label: 'About', key: 'about', href: '/about' },
 ];
 

@@ -46,6 +46,13 @@ export default function CheckoutPage() {
 
   const [loading, setLoading] = useState(false);
 
+  // COD Anti-Fraud OTP Verification State
+  const [isPhoneVerified, setIsPhoneVerified] = useState(false);
+  const [showOtpModal, setShowOtpModal] = useState(false);
+  const [otpCode, setOtpCode] = useState('');
+  const [otpLoading, setOtpLoading] = useState(false);
+  const [otpTimer, setOtpTimer] = useState(60);
+
   const cartSubtotal = subtotal();
   const isDhaka = formData.district === 'Dhaka';
   const shippingFee = cartSubtotal >= 999 && isDhaka ? 0 : isDhaka ? SHIPPING_FEE.dhaka : SHIPPING_FEE.outside;
@@ -53,6 +60,63 @@ export default function CheckoutPage() {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  };
+
+  const handleSendOtp = async (cleanPhone: string) => {
+    setOtpLoading(true);
+    try {
+      const res = await fetch('/api/auth/otp/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone: cleanPhone }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setShowOtpModal(true);
+        setOtpTimer(60);
+        if (data.previewCode) {
+          toast.success(`Verification code: ${data.previewCode}`, { duration: 6000 });
+        } else {
+          toast.success(data.message || 'OTP sent to your phone');
+        }
+      } else {
+        toast.error(data.error || 'Failed to send OTP code');
+      }
+    } catch {
+      toast.error('Network error sending verification code');
+    } finally {
+      setOtpLoading(false);
+    }
+  };
+
+  const handleVerifyOtpAndProceed = async () => {
+    if (!otpCode || otpCode.trim().length !== 4) {
+      toast.error('Please enter the 4-digit code sent to your mobile');
+      return;
+    }
+
+    setOtpLoading(true);
+    try {
+      const res = await fetch('/api/auth/otp/verify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone: formData.phone.trim(), code: otpCode.trim() }),
+      });
+      const data = await res.json();
+
+      if (data.success) {
+        setIsPhoneVerified(true);
+        setShowOtpModal(false);
+        toast.success('Mobile number verified! Confirming order...');
+        executeOrderPlacement(true);
+      } else {
+        toast.error(data.error || 'Invalid verification code');
+      }
+    } catch {
+      toast.error('Error verifying code');
+    } finally {
+      setOtpLoading(false);
+    }
   };
 
   const handleSubmitOrder = async (e: React.FormEvent) => {
@@ -85,6 +149,16 @@ export default function CheckoutPage() {
       return;
     }
 
+    // For Cash on Delivery: ensure phone is verified to eliminate fake orders
+    if (paymentMethod === 'cod' && !isPhoneVerified) {
+      handleSendOtp(cleanPhone);
+      return;
+    }
+
+    executeOrderPlacement(isPhoneVerified);
+  };
+
+  const executeOrderPlacement = async (verifiedPhone: boolean) => {
     setLoading(true);
 
     try {
@@ -118,6 +192,7 @@ export default function CheckoutPage() {
         subtotal: cartSubtotal,
         shippingFee,
         total: orderTotal,
+        isPhoneVerified: verifiedPhone,
       };
 
       const res = await fetch('/api/orders', {
@@ -559,6 +634,69 @@ export default function CheckoutPage() {
           </div>
         </form>
       </div>
+
+      {/* Cash on Delivery (COD) OTP Verification Modal */}
+      {showOtpModal && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl border border-gray-100 animate-scale-up text-center">
+            <div className="w-12 h-12 rounded-2xl bg-primary-50 text-primary-600 flex items-center justify-center mx-auto mb-3">
+              <FiShield size={24} />
+            </div>
+
+            <h3 className="font-black text-lg text-gray-900">মোবাইল নম্বর যাচাই করুন</h3>
+            <p className="text-xs text-gray-500 mt-1">
+              ক্যাশ অন ডেলিভারি নিশ্চিত করতে <span className="font-bold text-gray-800">{formData.phone}</span> নম্বরে একটি ৪ ডিজিটের কোড পাঠানো হয়েছে।
+            </p>
+
+            <div className="my-5">
+              <input
+                type="text"
+                maxLength={4}
+                value={otpCode}
+                onChange={(e) => setOtpCode(e.target.value.replace(/[^0-9]/g, ''))}
+                placeholder="• • • •"
+                className="w-44 text-center tracking-[0.6em] text-2xl font-black font-mono py-2.5 px-3 border-2 border-primary-500 rounded-xl focus:outline-none focus:ring-4 focus:ring-primary-100 text-gray-900"
+                autoFocus
+              />
+            </div>
+
+            <div className="space-y-2">
+              <button
+                type="button"
+                onClick={handleVerifyOtpAndProceed}
+                disabled={otpLoading || otpCode.length !== 4}
+                className="w-full py-3 rounded-xl bg-primary-600 hover:bg-primary-700 disabled:opacity-50 text-white font-extrabold text-xs shadow-md transition-all active:scale-95 flex items-center justify-center gap-2"
+              >
+                {otpLoading ? (
+                  <>
+                    <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    যাচাই করা হচ্ছে...
+                  </>
+                ) : (
+                  'কোড যাচাই ও অর্ডার সম্পন্ন করুন'
+                )}
+              </button>
+
+              <button
+                type="button"
+                onClick={() => handleSendOtp(formData.phone.trim())}
+                disabled={otpLoading}
+                className="text-xs font-bold text-gray-500 hover:text-primary-600 transition-colors py-1 block w-full"
+              >
+                কোড পাননি? পুনরায় পাঠান
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setShowOtpModal(false)}
+                className="text-[11px] text-gray-400 hover:text-gray-600 pt-1 block w-full"
+              >
+                বাতিল করুন
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
