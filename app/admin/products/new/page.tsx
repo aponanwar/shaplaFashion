@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
@@ -16,6 +16,33 @@ export default function NewProductPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [categoryList, setCategoryList] = useState<string[]>([
+    'Handloom Sarees',
+    'Men’s Panjabi',
+    'Women’s Kurtis',
+    'Salwar Kameez',
+    'Dresses',
+    'Jute Bags & Crafts',
+    'Clay Pottery',
+    'Nakshi Kantha',
+    'Bamboo Crafts',
+    'Wall Art',
+  ]);
+
+  useEffect(() => {
+    fetch('/api/categories')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.categories && data.categories.length > 0) {
+          const names = data.categories.map((c: any) => c.name);
+          setCategoryList(names);
+          if (names[0]) {
+            setFormData((prev) => ({ ...prev, category: names[0] }));
+          }
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   const [formData, setFormData] = useState({
     name: '',
@@ -168,16 +195,11 @@ export default function NewProductPage() {
                 onChange={handleChange}
                 className="w-full px-3.5 py-2.5 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-primary-500 focus:outline-none bg-white"
               >
-                <option value="Handloom Sarees">Handloom Sarees</option>
-                <option value="Men’s Panjabi">Men’s Panjabi</option>
-                <option value="Women’s Kurtis">Women’s Kurtis</option>
-                <option value="Salwar Kameez">Salwar Kameez</option>
-                <option value="Dresses">Dresses</option>
-                <option value="Jute Bags & Crafts">Jute Bags & Crafts</option>
-                <option value="Clay Pottery">Clay Pottery</option>
-                <option value="Nakshi Kantha">Nakshi Kantha</option>
-                <option value="Bamboo Crafts">Bamboo Crafts</option>
-                <option value="Wall Art">Wall Art</option>
+                {categoryList.map((catName) => (
+                  <option key={catName} value={catName}>
+                    {catName}
+                  </option>
+                ))}
               </select>
             </div>
 

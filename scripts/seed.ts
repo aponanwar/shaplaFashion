@@ -1,3 +1,6 @@
+import { loadEnvConfig } from '@next/env';
+loadEnvConfig(process.cwd());
+
 import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
 import connectDB from '../lib/db';
@@ -218,8 +221,8 @@ async function seed() {
     console.log('✅ Connected to MongoDB');
 
     // 1. Seed Admin User
-    const adminEmail = process.env.ADMIN_EMAIL || 'admin@shaplaFashion.com';
-    const adminPass = process.env.ADMIN_PASSWORD || 'ChangeMe@123!';
+    const adminEmail = (process.env.ADMIN_EMAIL || 'admin@shaplafashion.com').toLowerCase().trim();
+    const adminPass = process.env.ADMIN_PASSWORD || 'admin123';
 
     const existingAdmin = await User.findOne({ email: adminEmail });
     if (!existingAdmin) {
@@ -231,9 +234,13 @@ async function seed() {
         isActive: true,
         isEmailVerified: true,
       });
-      console.log(`✅ Admin created: ${adminEmail} / ${adminPass}`);
+      console.log(`✅ Admin created: ${adminEmail}`);
     } else {
-      console.log(`ℹ️ Admin already exists: ${adminEmail}`);
+      existingAdmin.password = adminPass;
+      existingAdmin.role = 'superadmin';
+      existingAdmin.isActive = true;
+      await existingAdmin.save();
+      console.log(`✅ Admin updated: ${adminEmail}`);
     }
 
     // 2. Seed Categories

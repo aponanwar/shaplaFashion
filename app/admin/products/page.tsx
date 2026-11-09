@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import {
@@ -94,6 +94,35 @@ const DEMO_PRODUCTS: AdminProduct[] = [
 export default function AdminProductsPage() {
   const [products, setProducts] = useState<AdminProduct[]>(DEMO_PRODUCTS);
   const [search, setSearch] = useState('');
+
+  useEffect(() => {
+    fetch('/api/products?limit=100')
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.products && data.products.length > 0) {
+          setProducts(
+            data.products.map((p: any) => ({
+              id: p._id || p.id,
+              name: p.name,
+              slug: p.slug,
+              category: typeof p.category === 'object' ? p.category?.name : (p.category || 'General'),
+              price: p.price,
+              discountPrice: p.discountPrice,
+              stock: p.stock ?? 10,
+              sku: p.sku || 'SKU-001',
+              image:
+                p.images?.[0]?.url ||
+                (typeof p.images?.[0] === 'string' ? p.images[0] : null) ||
+                'https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=300&q=80',
+              isActive: p.isActive !== false,
+            }))
+          );
+        }
+      })
+      .catch(() => {
+        // Fallback to DEMO_PRODUCTS already in state
+      });
+  }, []);
 
   const handleDelete = (id: string, name: string) => {
     if (confirm(`Are you sure you want to delete "${name}"?`)) {

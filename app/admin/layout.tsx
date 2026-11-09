@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { signOut } from 'next-auth/react';
 import {
   FiHome,
   FiShoppingBag,
@@ -16,12 +17,15 @@ import {
   FiX,
   FiBell,
   FiAlertTriangle,
+  FiGrid,
+  FiLogOut,
 } from 'react-icons/fi';
 
 const NAV_ITEMS = [
   { label: 'Overview', href: '/admin/dashboard', icon: FiHome },
   { label: 'All Products', href: '/admin/products', icon: FiShoppingBag },
   { label: 'Add Product', href: '/admin/products/new', icon: FiPlusCircle, badge: 'New' },
+  { label: 'Categories', href: '/admin/categories', icon: FiGrid },
   { label: 'Stock Management', href: '/admin/inventory', icon: FiLayers, badge: 'Live' },
   { label: 'Orders & Courier', href: '/admin/orders', icon: FiPackage },
   { label: 'Users & Staff', href: '/admin/users', icon: FiUsers },
@@ -113,20 +117,31 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           })}
         </nav>
 
-        {/* Footer profile indicator */}
-        <div className="p-4 border-t border-gray-800 flex items-center justify-between text-xs">
-          <div className="flex items-center gap-2.5 min-w-0">
-            <div className="w-8 h-8 rounded-full bg-primary-600 text-white font-bold flex items-center justify-center shrink-0">
-              A
+        {/* Footer profile & Logout indicator */}
+        <div className="p-4 border-t border-gray-800 space-y-3">
+          <div className="flex items-center justify-between text-xs">
+            <div className="flex items-center gap-2.5 min-w-0">
+              <div className="w-8 h-8 rounded-full bg-primary-600 text-white font-bold flex items-center justify-center shrink-0">
+                A
+              </div>
+              <div className="min-w-0">
+                <span className="font-bold text-gray-200 block truncate">Administrator</span>
+                <span className="text-[10px] text-gray-500 block truncate">admin@shaplafashion.com</span>
+              </div>
             </div>
-            <div className="min-w-0">
-              <span className="font-bold text-gray-200 block truncate">Administrator</span>
-              <span className="text-[10px] text-gray-500 block truncate">admin@shaplaFashion.com</span>
-            </div>
+            <Link href="/" className="text-gray-400 hover:text-white" title="Return to Shop">
+              <FiExternalLink size={14} />
+            </Link>
           </div>
-          <Link href="/" className="text-gray-400 hover:text-white" title="Return to Shop">
-            <FiExternalLink size={14} />
-          </Link>
+
+          <button
+            onClick={() => signOut({ callbackUrl: '/auth/login' })}
+            className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-xl bg-red-950/40 hover:bg-red-900/60 border border-red-800/50 text-red-300 hover:text-red-100 text-xs font-bold transition-all"
+            title="Log out of Admin Dashboard"
+          >
+            <FiLogOut size={14} />
+            <span>Log Out</span>
+          </button>
         </div>
       </aside>
 
@@ -154,6 +169,15 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             >
               <FiExternalLink /> View Customer Shop
             </Link>
+
+            <button
+              onClick={() => signOut({ callbackUrl: '/auth/login' })}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-50 hover:bg-red-100 text-red-600 text-xs font-bold transition-colors"
+              title="Sign Out"
+            >
+              <FiLogOut size={14} />
+              <span className="hidden sm:inline">Logout</span>
+            </button>
           </div>
         </header>
 

@@ -8,7 +8,7 @@ import { signIn } from 'next-auth/react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { FiEye, FiEyeOff, FiAlertCircle, FiLock, FiUser, FiShield, FiArrowRight } from 'react-icons/fi';
+import { FiEye, FiEyeOff, FiAlertCircle, FiLock, FiUser, FiArrowRight } from 'react-icons/fi';
 import { motion } from 'framer-motion';
 import toast from 'react-hot-toast';
 
@@ -36,7 +36,6 @@ function LoginFormContent() {
   const {
     register,
     handleSubmit,
-    setValue,
     formState: { errors },
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
@@ -45,12 +44,6 @@ function LoginFormContent() {
       password: '',
     },
   });
-
-  const handleAdminQuickFill = () => {
-    setValue('identifier', 'admin');
-    setValue('password', 'admin123');
-    toast.success('Admin credentials filled (admin / admin123)');
-  };
 
   const onSubmit = async (data: LoginFormData) => {
     if (isRateLimited) return;
@@ -109,24 +102,8 @@ function LoginFormContent() {
             <p className="text-rose-100 text-xs mt-1">Sign in to your account or admin dashboard</p>
           </div>
 
-          {/* Quick Admin Helper Pill */}
-          <div className="bg-amber-50 border-b border-amber-200/80 px-6 py-2.5 flex items-center justify-between text-xs">
-            <div className="flex items-center gap-1.5 text-amber-900">
-              <FiShield className="text-amber-600 shrink-0" />
-              <span className="font-semibold">Admin Credentials:</span>
-              <code className="bg-amber-100 px-1 py-0.5 rounded font-mono text-[11px]">admin</code> / <code className="bg-amber-100 px-1 py-0.5 rounded font-mono text-[11px]">admin123</code>
-            </div>
-            <button
-              type="button"
-              onClick={handleAdminQuickFill}
-              className="text-[11px] font-bold text-amber-800 hover:text-amber-950 underline shrink-0"
-            >
-              Auto-fill
-            </button>
-          </div>
-
           {/* Form */}
-          <div className="px-8 py-7">
+          <div className="px-8 py-8">
             {/* Rate limit warning */}
             {isRateLimited && (
               <motion.div

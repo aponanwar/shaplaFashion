@@ -71,6 +71,14 @@ function CategoryGridSkeleton() {
   );
 }
 
+export interface CategoryItem {
+  name: string;
+  slug: string;
+  image: string;
+  count?: string;
+  emoji?: string;
+}
+
 // ─── Category Card ─────────────────────────────────────────────────────────────
 const cardVariants = {
   hidden: { opacity: 0, y: 20 },
@@ -81,7 +89,7 @@ const cardVariants = {
   }),
 };
 
-function CategoryCard({ cat, index }: { cat: (typeof categories)[0]; index: number }) {
+function CategoryCard({ cat, index }: { cat: CategoryItem; index: number }) {
   return (
     <motion.div
       custom={index}
@@ -116,10 +124,12 @@ function CategoryCard({ cat, index }: { cat: (typeof categories)[0]; index: numb
         {/* Text content */}
         <div className="absolute bottom-0 left-0 right-0 p-3 md:p-4 text-white">
           <div className="flex items-center gap-1.5 mb-0.5">
-            <span className="text-lg leading-none">{cat.emoji}</span>
+            <span className="text-lg leading-none">{cat.emoji || '🌸'}</span>
             <span className="font-bold text-sm md:text-base truncate">{cat.name}</span>
           </div>
-          <p className="text-xs text-white/70 group-hover:text-white/90 transition-colors">{cat.count}</p>
+          <p className="text-xs text-white/70 group-hover:text-white/90 transition-colors">
+            {cat.count || 'Explore styles'}
+          </p>
         </div>
 
         {/* Hover CTA chip */}
@@ -134,7 +144,13 @@ function CategoryCard({ cat, index }: { cat: (typeof categories)[0]; index: numb
 }
 
 // ─── Main Component ────────────────────────────────────────────────────────────
-export default function CategoryGrid() {
+interface CategoryGridProps {
+  categories?: CategoryItem[];
+}
+
+export default function CategoryGrid({ categories: propCategories }: CategoryGridProps) {
+  const displayCategories = propCategories && propCategories.length > 0 ? propCategories : categories;
+
   return (
     <section className="py-12 md:py-16 bg-white" aria-label="Shop by Category">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -156,7 +172,7 @@ export default function CategoryGrid() {
 
         {/* Grid */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
-          {categories.map((cat, i) => (
+          {displayCategories.map((cat, i) => (
             <CategoryCard key={cat.slug} cat={cat} index={i} />
           ))}
         </div>
