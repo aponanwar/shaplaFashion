@@ -8,15 +8,15 @@ import { signIn } from 'next-auth/react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { FiEye, FiEyeOff, FiAlertCircle, FiLock, FiMail } from 'react-icons/fi';
+import { FiEye, FiEyeOff, FiAlertCircle, FiLock, FiUser, FiShield, FiArrowRight } from 'react-icons/fi';
 import { motion } from 'framer-motion';
 import toast from 'react-hot-toast';
 
 // ─── Schema ───────────────────────────────────────────────────────────────────
 
 const loginSchema = z.object({
-  email: z.string().email('Please enter a valid email address'),
-  password: z.string().min(6, 'Password must be at least 6 characters'),
+  identifier: z.string().min(2, 'Please enter your username or email'),
+  password: z.string().min(4, 'Password must be at least 4 characters'),
 });
 
 type LoginFormData = z.infer<typeof loginSchema>;
@@ -26,7 +26,7 @@ type LoginFormData = z.infer<typeof loginSchema>;
 function LoginFormContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get('callbackUrl') ?? '/';
+  const callbackUrl = searchParams.get('callbackUrl') ?? '/admin/dashboard';
 
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -36,10 +36,21 @@ function LoginFormContent() {
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
+    defaultValues: {
+      identifier: '',
+      password: '',
+    },
   });
+
+  const handleAdminQuickFill = () => {
+    setValue('identifier', 'admin');
+    setValue('password', 'admin123');
+    toast.success('Admin credentials filled (admin / admin123)');
+  };
 
   const onSubmit = async (data: LoginFormData) => {
     if (isRateLimited) return;
@@ -48,7 +59,7 @@ function LoginFormContent() {
 
     try {
       const result = await signIn('credentials', {
-        email: data.email.toLowerCase().trim(),
+        email: data.identifier.toLowerCase().trim(),
         password: data.password,
         redirect: false,
       });
@@ -65,11 +76,11 @@ function LoginFormContent() {
           setIsRateLimited(true);
           toast.error('Too many failed attempts. Please try again later.');
         } else {
-          toast.error(result.error || 'Invalid email or password');
+          toast.error(result.error || 'Invalid username/email or password');
         }
       } else {
-        toast.success('Welcome back!');
-        router.push(callbackUrl);
+        toast.success('Welcome back, Admin!');
+        router.push(callbackUrl || '/admin/dashboard');
         router.refresh();
       }
     } catch {
@@ -91,15 +102,31 @@ function LoginFormContent() {
         <div className="bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden">
           {/* Header */}
           <div className="bg-gradient-to-r from-[#C41E3A] to-[#a31830] px-8 py-8 text-center">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-white/20 rounded-2xl mb-4">
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-white/20 rounded-2xl mb-4 shadow-inner">
               <span className="text-3xl">🌸</span>
             </div>
-            <h1 className="text-2xl font-bold text-white tracking-tight">Shapla Fashion</h1>
-            <p className="text-rose-200 text-sm mt-1">Sign in to your account</p>
+            <h1 className="text-2xl font-black text-white tracking-tight">Shapla Fashion</h1>
+            <p className="text-rose-100 text-xs mt-1">Sign in to your account or admin dashboard</p>
+          </div>
+
+          {/* Quick Admin Helper Pill */}
+          <div className="bg-amber-50 border-b border-amber-200/80 px-6 py-2.5 flex items-center justify-between text-xs">
+            <div className="flex items-center gap-1.5 text-amber-900">
+              <FiShield className="text-amber-600 shrink-0" />
+              <span className="font-semibold">Admin Credentials:</span>
+              <code className="bg-amber-100 px-1 py-0.5 rounded font-mono text-[11px]">admin</code> / <code className="bg-amber-100 px-1 py-0.5 rounded font-mono text-[11px]">admin123</code>
+            </div>
+            <button
+              type="button"
+              onClick={handleAdminQuickFill}
+              className="text-[11px] font-bold text-amber-800 hover:text-amber-950 underline shrink-0"
+            >
+              Auto-fill
+            </button>
           </div>
 
           {/* Form */}
-          <div className="px-8 py-8">
+          <div className="px-8 py-7">
             {/* Rate limit warning */}
             {isRateLimited && (
               <motion.div
@@ -111,8 +138,7 @@ function LoginFormContent() {
                 <div>
                   <p className="text-sm font-semibold text-red-700">Too many login attempts</p>
                   <p className="text-xs text-red-600 mt-0.5">
-                    Your account has been temporarily locked. Please try again in 15 minutes or
-                    reset your password.
+                    Your account has been temporarily locked. Please try again in 15 minutes.
                   </p>
                 </div>
               </motion.div>
@@ -129,34 +155,34 @@ function LoginFormContent() {
               </div>
             )}
 
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-5" noValidate>
-              {/* Email */}
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
+              {/* Username or Email */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                  Email address
+                <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">
+                  Username or Email
                 </label>
                 <div className="relative">
-                  <FiMail
+                  <FiUser
                     className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400"
                     size={17}
                   />
                   <input
-                    {...register('email')}
-                    type="email"
-                    autoComplete="email"
-                    placeholder="you@example.com"
+                    {...register('identifier')}
+                    type="text"
+                    autoComplete="username"
+                    placeholder="admin or admin@shaplafashion.com"
                     disabled={isRateLimited}
                     className={`w-full pl-10 pr-4 py-3 rounded-xl border text-sm transition-all outline-none
-                      ${errors.email
+                      ${errors.identifier
                         ? 'border-red-400 bg-red-50 focus:ring-2 focus:ring-red-200'
                         : 'border-gray-200 bg-gray-50 focus:border-[#C41E3A] focus:ring-2 focus:ring-rose-100'
                       } disabled:opacity-50 disabled:cursor-not-allowed`}
                   />
                 </div>
-                {errors.email && (
+                {errors.identifier && (
                   <p className="text-xs text-red-500 mt-1.5 flex items-center gap-1">
                     <FiAlertCircle size={12} />
-                    {errors.email.message}
+                    {errors.identifier.message}
                   </p>
                 )}
               </div>
@@ -164,12 +190,12 @@ function LoginFormContent() {
               {/* Password */}
               <div>
                 <div className="flex items-center justify-between mb-1.5">
-                  <label className="block text-sm font-medium text-gray-700">Password</label>
+                  <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider">Password</label>
                   <Link
                     href="/auth/forgot-password"
                     className="text-xs text-[#C41E3A] hover:underline font-medium"
                   >
-                    Forgot password?
+                    Forgot?
                   </Link>
                 </div>
                 <div className="relative">
@@ -181,7 +207,7 @@ function LoginFormContent() {
                     {...register('password')}
                     type={showPassword ? 'text' : 'password'}
                     autoComplete="current-password"
-                    placeholder="Enter your password"
+                    placeholder="Enter password"
                     disabled={isRateLimited}
                     className={`w-full pl-10 pr-12 py-3 rounded-xl border text-sm transition-all outline-none
                       ${errors.password
@@ -210,64 +236,34 @@ function LoginFormContent() {
               <button
                 type="submit"
                 disabled={isLoading || isRateLimited}
-                className="w-full bg-[#C41E3A] hover:bg-[#a31830] disabled:bg-gray-300 text-white font-semibold py-3.5 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 shadow-sm hover:shadow-md disabled:cursor-not-allowed text-sm"
+                className="w-full py-3.5 px-6 rounded-xl bg-[#C41E3A] hover:bg-[#a31830] active:scale-95 text-white font-bold text-sm shadow-lg shadow-rose-600/30 transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none mt-2"
               >
                 {isLoading ? (
                   <>
-                    <svg
-                      className="animate-spin h-4 w-4"
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                    >
-                      <circle
-                        className="opacity-25"
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        strokeWidth="4"
-                      />
-                      <path
-                        className="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-                      />
-                    </svg>
-                    Signing in…
+                    <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    <span>Signing in...</span>
                   </>
                 ) : (
-                  'Sign in with credentials'
+                  <>
+                    <span>Enter Dashboard</span>
+                    <FiArrowRight size={16} />
+                  </>
                 )}
               </button>
             </form>
 
-            {/* Divider */}
-            <div className="relative my-6">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-100" />
-              </div>
-              <div className="relative flex justify-center text-xs text-gray-400">
-                <span className="bg-white px-3">or</span>
-              </div>
-            </div>
-
             {/* Register link */}
-            <p className="text-center text-sm text-gray-600">
-              Don&apos;t have an account?{' '}
+            <p className="text-center text-xs text-gray-500 mt-6">
+              Need a customer account?{' '}
               <Link
                 href="/auth/register"
-                className="text-[#C41E3A] font-semibold hover:underline"
+                className="text-[#C41E3A] font-bold hover:underline"
               >
-                Create account
+                Create an account
               </Link>
             </p>
           </div>
         </div>
-
-        <p className="text-center text-xs text-gray-400 mt-6">
-          © {new Date().getFullYear()} Shapla Fashion. All rights reserved.
-        </p>
       </motion.div>
     </div>
   );
@@ -277,8 +273,8 @@ export default function LoginPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-          <div className="w-8 h-8 border-2 border-primary-600 border-t-transparent rounded-full animate-spin"></div>
+        <div className="min-h-screen flex items-center justify-center bg-gray-50">
+          <div className="w-8 h-8 border-4 border-primary-600 border-t-transparent rounded-full animate-spin" />
         </div>
       }
     >

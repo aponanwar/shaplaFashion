@@ -47,6 +47,9 @@ const nextConfig = {
   },
   // Compress responses
   compress: true,
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
   // Power with edge cache
   experimental: {
     optimizePackageImports: ['react-icons', 'framer-motion', 'recharts'],

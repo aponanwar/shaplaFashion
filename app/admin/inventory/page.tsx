@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import {
   FiLayers,
@@ -103,15 +103,36 @@ export default function AdminInventoryPage() {
   const [inventory, setInventory] = useState<InventoryItem[]>(INITIAL_INVENTORY);
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState<'all' | 'low' | 'out'>('all');
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
-  const updateStock = (id: string, delta: number) => {
+  const fetchLiveInventory = async () => {
+    setIsRefreshing(true);
+    try {
+      const res = await fetch('/api/admin/inventory');
+      const data = await res.json();
+      if (data.success && data.items && data.items.length > 0) {
+        setInventory(data.items);
+      }
+    } catch {
+      // Keep state
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchLiveInventory();
+  }, []);
+
+  const updateStock = async (id: string, delta: number) => {
+    let finalStock = 0;
     setInventory((prev) =>
       prev.map((item) => {
         if (item.id === id) {
-          const newStock = Math.max(0, item.stock + delta);
+          finalStock = Math.max(0, item.stock + delta);
           return {
             ...item,
-            stock: newStock,
+            stock: finalStock,
             lastUpdated: 'Just now',
           };
         }
@@ -119,6 +140,16 @@ export default function AdminInventoryPage() {
       })
     );
     toast.success('Stock quantity updated');
+
+    try {
+      await fetch('/api/admin/inventory', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, stock: finalStock }),
+      });
+    } catch {
+      // Non-blocking
+    }
   };
 
   const filteredItems = inventory.filter((item) => {

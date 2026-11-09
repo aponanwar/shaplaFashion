@@ -6,6 +6,7 @@ import PwaRegister from '@/components/common/PwaRegister';
 import InstallPwaPrompt from '@/components/common/InstallPwaPrompt';
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'),
   title: {
     default: 'Shapla Fashion — Authentic Bangladeshi Clothes & Crafts',
     template: '%s | Shapla Fashion',

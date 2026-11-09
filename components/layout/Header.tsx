@@ -25,35 +25,35 @@ const NAV_ITEMS = [
       {
         groupLabel: 'Clothes',
         links: [
-          { label: 'Sarees', href: '/category/sarees', emoji: '🥻' },
-          { label: 'Panjabi', href: '/category/panjabi', emoji: '👘' },
-          { label: 'Kurti', href: '/category/kurti', emoji: '👗' },
-          { label: 'Salwar', href: '/category/salwar', emoji: '👚' },
-          { label: 'Dress', href: '/category/dress', emoji: '👗' },
+          { label: 'Handloom Sarees', href: '/products?category=sarees', emoji: '🥻' },
+          { label: 'Men’s Panjabi', href: '/products?category=panjabi', emoji: '👘' },
+          { label: 'Women’s Kurti', href: '/products?category=kurti', emoji: '👗' },
+          { label: 'Salwar Kameez', href: '/products?category=salwar-kameez', emoji: '👚' },
+          { label: 'Party Dresses', href: '/products?category=dress', emoji: '👗' },
         ],
       },
       {
-        groupLabel: 'Crafts',
+        groupLabel: 'Crafts & Decor',
         links: [
-          { label: 'Jute Bags', href: '/category/jute-bags', emoji: '🧺' },
-          { label: 'Pottery', href: '/category/pottery', emoji: '🏺' },
-          { label: 'Kantha', href: '/category/kantha', emoji: '🪡' },
-          { label: 'Bamboo', href: '/category/bamboo', emoji: '🎋' },
-          { label: 'Wall Art', href: '/category/wall-art', emoji: '🖼️' },
+          { label: 'Jute Bags & Crafts', href: '/products?category=jute-bags', emoji: '🧺' },
+          { label: 'Clay Pottery', href: '/products?category=pottery', emoji: '🏺' },
+          { label: 'Nakshi Kantha', href: '/products?category=kantha', emoji: '🪡' },
+          { label: 'Bamboo Crafts', href: '/products?category=bamboo', emoji: '🎋' },
+          { label: 'Folk Wall Art', href: '/products?category=wall-art', emoji: '🖼️' },
         ],
       },
     ],
   },
-  { label: 'Sale', key: 'sale', href: '/sale', badge: 'HOT', badgeColor: 'bg-primary-600' },
-  { label: 'New Arrivals', key: 'new-arrivals', href: '/new-arrivals', badge: 'NEW', badgeColor: 'bg-gold-500' },
+  { label: 'Sale', key: 'sale', href: '/products?tag=flash-sale', badge: 'HOT', badgeColor: 'bg-primary-600' },
+  { label: 'New Arrivals', key: 'new-arrivals', href: '/products?sort=newest', badge: 'NEW', badgeColor: 'bg-amber-500' },
   { label: 'Track Order', key: 'track-order', href: '/track-order', badge: 'LIVE', badgeColor: 'bg-blue-600' },
   { label: 'About', key: 'about', href: '/about' },
 ];
 
 /* ─── Shapla Flower Logo SVG ─── */
-function ShaplaSVG({ size = 36 }: { size?: number }) {
+function ShaplaSVG({ size = 34 }: { size?: number }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 40 40" fill="none" aria-hidden="true">
+    <svg width={size} height={size} viewBox="0 0 40 40" fill="none" aria-hidden="true" className="shrink-0">
       <ellipse cx="20" cy="8" rx="5" ry="8" fill="#C41E3A" opacity="0.9" transform="rotate(0 20 20)" />
       <ellipse cx="20" cy="8" rx="5" ry="8" fill="#C41E3A" opacity="0.9" transform="rotate(60 20 20)" />
       <ellipse cx="20" cy="8" rx="5" ry="8" fill="#C41E3A" opacity="0.9" transform="rotate(120 20 20)" />
@@ -70,16 +70,16 @@ function ShaplaSVG({ size = 36 }: { size?: number }) {
 function AnnouncementBar() {
   const announcements = [
     'Free delivery within Dhaka on orders over ৳999',
-    '🛍️ Authentic handloom sarees — crafted with love',
-    '📦 Cash on Delivery available · bKash · Nagad accepted',
-    '🎁 New arrivals every week — check out the latest drops!',
+    '🛍️ Authentic handloom sarees & homemade crafts — crafted with love',
+    '📦 Cash on Delivery available across Bangladesh · bKash · Nagad accepted',
+    '🎁 1-Click WhatsApp Quick Order available on all products!',
   ];
   const text = announcements.join('   ✦   ');
 
   return (
-    <div className="bg-primary-600 text-white text-xs py-2 overflow-hidden relative">
+    <div className="bg-primary-600 text-white text-xs py-1.5 overflow-hidden relative border-b border-primary-700/50">
       <div className="flex items-center gap-2 px-4">
-        <FiTruck className="w-3.5 h-3.5 shrink-0 opacity-80" />
+        <FiTruck className="w-3.5 h-3.5 shrink-0 opacity-90" />
         <div className="overflow-hidden flex-1">
           <p className="whitespace-nowrap animate-[marquee_30s_linear_infinite]">{text}&nbsp;&nbsp;&nbsp;✦&nbsp;&nbsp;&nbsp;{text}</p>
         </div>
@@ -109,12 +109,12 @@ function IconBadge({
   href?: string;
 }) {
   const inner = (
-    <span className="relative inline-flex items-center justify-center p-2 rounded-full text-gray-600 hover:text-primary-600 hover:bg-primary-50 transition-colors">
+    <span className="relative inline-flex items-center justify-center p-2 rounded-xl text-gray-600 hover:text-primary-600 hover:bg-primary-50 transition-colors">
       {icon}
       {count !== undefined && count > 0 && (
         <span
           suppressHydrationWarning
-          className="absolute -top-0.5 -right-0.5 bg-primary-600 text-white text-[9px] font-bold rounded-full min-w-[16px] h-4 flex items-center justify-center px-0.5 leading-none"
+          className="absolute -top-1 -right-1 bg-primary-600 text-white text-[9px] font-bold rounded-full min-w-[17px] h-[17px] flex items-center justify-center px-1 leading-none shadow-sm"
         >
           {count > 99 ? '99+' : count}
         </span>
@@ -126,7 +126,7 @@ function IconBadge({
     return (
       <Link href={href} aria-label={label} className="flex flex-col items-center gap-0.5 group">
         {inner}
-        <span className="hidden xl:block text-[10px] text-gray-500 group-hover:text-primary-600 transition-colors leading-none">
+        <span className="hidden xl:block text-[10px] font-medium text-gray-500 group-hover:text-primary-600 transition-colors leading-none">
           {label}
         </span>
       </Link>
@@ -136,7 +136,7 @@ function IconBadge({
   return (
     <button onClick={onClick} aria-label={label} className="flex flex-col items-center gap-0.5 group">
       {inner}
-      <span className="hidden xl:block text-[10px] text-gray-500 group-hover:text-primary-600 transition-colors leading-none">
+      <span className="hidden xl:block text-[10px] font-medium text-gray-500 group-hover:text-primary-600 transition-colors leading-none">
         {label}
       </span>
     </button>
@@ -153,16 +153,16 @@ function MegaMenuPanel({
 }) {
   return (
     <div
-      className={`absolute top-full left-0 w-[540px] max-w-[90vw] bg-white rounded-2xl shadow-2xl border border-gray-100 p-6 z-50 transition-all duration-200 ${
+      className={`absolute top-full left-0 w-[500px] max-w-[90vw] bg-white rounded-2xl shadow-2xl border border-gray-100 p-5 z-50 transition-all duration-200 mt-1 ${
         isOpen
-          ? 'opacity-100 translate-y-1 pointer-events-auto'
+          ? 'opacity-100 translate-y-0 pointer-events-auto'
           : 'opacity-0 -translate-y-2 pointer-events-none'
       }`}
     >
-      <div className="grid grid-cols-2 gap-8">
+      <div className="grid grid-cols-2 gap-6">
         {groups.map((group) => (
           <div key={group.groupLabel}>
-            <h3 className="text-xs font-bold text-primary-600 uppercase tracking-widest mb-3 pb-2 border-b border-primary-100">
+            <h3 className="text-xs font-bold text-primary-600 uppercase tracking-widest mb-2.5 pb-1.5 border-b border-primary-100">
               {group.groupLabel}
             </h3>
             <ul className="space-y-1">
@@ -170,7 +170,7 @@ function MegaMenuPanel({
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="flex items-center gap-2 text-sm text-gray-700 hover:text-primary-700 hover:bg-primary-50 px-2 py-1.5 rounded-lg transition-colors"
+                    className="flex items-center gap-2 text-xs font-medium text-gray-700 hover:text-primary-700 hover:bg-primary-50 px-2 py-1.5 rounded-lg transition-colors"
                   >
                     {link.emoji && <span>{link.emoji}</span>}
                     {link.label}
@@ -182,16 +182,16 @@ function MegaMenuPanel({
         ))}
       </div>
       {/* Bottom promo strip */}
-      <div className="mt-5 pt-4 border-t border-gray-100 flex items-center justify-between bg-primary-50 rounded-xl px-4 py-3">
+      <div className="mt-4 pt-3 border-t border-gray-100 flex items-center justify-between bg-primary-50 rounded-xl px-4 py-2.5">
         <div>
           <p className="text-xs font-bold text-primary-700">Explore All Collections →</p>
-          <p className="text-[11px] text-gray-500">Handpicked authentic Bangladeshi pieces</p>
+          <p className="text-[11px] text-gray-500">Handcrafted authentic Bangladeshi pieces</p>
         </div>
         <Link
-          href="/categories"
+          href="/products"
           className="text-xs font-semibold bg-primary-600 hover:bg-primary-700 text-white px-3 py-1.5 rounded-lg transition-colors"
         >
-          Shop All
+          View All
         </Link>
       </div>
     </div>
@@ -199,7 +199,7 @@ function MegaMenuPanel({
 }
 
 /* ════════════════════════════════════════════
-   MAIN HEADER
+   MAIN HEADER (UNIFIED SINGLE NAVBAR)
 ═══════════════════════════════════════════ */
 export default function Header() {
   const [mounted, setMounted] = useState(false);
@@ -240,32 +240,29 @@ export default function Header() {
       {/* ─── Announcement Bar ─── */}
       <AnnouncementBar />
 
-      {/* ─── Sticky Header Shell ─── */}
+      {/* ─── Single Unified Sticky Header ─── */}
       <header
-        className={`sticky top-0 z-30 bg-white transition-shadow duration-200 ${
-          isScrolled ? 'shadow-md' : 'shadow-sm'
+        className={`sticky top-0 z-30 bg-white transition-all duration-200 border-b border-gray-100 ${
+          isScrolled ? 'shadow-md py-1' : 'shadow-xs py-1.5'
         }`}
       >
-        {/* ── Main header row ── */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16 gap-4">
+          <div className="flex items-center justify-between h-16 gap-3 lg:gap-5">
 
-            {/* LEFT: Hamburger (mobile) + Logo */}
-            <div className="flex items-center gap-3">
-              {/* Hamburger — mobile only */}
+            {/* 1. LEFT: Hamburger (mobile only) + Brand Logo */}
+            <div className="flex items-center gap-2 sm:gap-3 shrink-0">
               <button
                 onClick={() => setMobileMenuOpen(true)}
                 aria-label="Open navigation menu"
-                className="lg:hidden p-2 rounded-full text-gray-600 hover:bg-gray-100 transition-colors"
+                className="lg:hidden p-2 rounded-xl text-gray-600 hover:bg-gray-100 transition-colors"
               >
                 <FiMenu className="w-5 h-5" />
               </button>
 
-              {/* Logo */}
               <Link href="/" className="flex items-center gap-2 group shrink-0" aria-label="Shapla Fashion — Home">
                 <ShaplaSVG size={34} />
                 <div className="leading-none">
-                  <span className="font-bold text-lg text-gray-900 group-hover:text-primary-700 transition-colors tracking-tight">
+                  <span className="font-extrabold text-lg text-gray-900 group-hover:text-primary-700 transition-colors tracking-tight">
                     Shapla
                   </span>
                   <span className="font-light text-lg text-primary-600 tracking-tight"> Fashion</span>
@@ -273,13 +270,64 @@ export default function Header() {
               </Link>
             </div>
 
-            {/* CENTER: Search bar — hidden on xs/sm, visible md+ */}
-            <div className="hidden md:flex flex-1 max-w-lg justify-center">
+            {/* 2. CENTER-LEFT: Merged Navigation Links (Categories, Sale, New Arrivals, Track Order, About) */}
+            <nav aria-label="Main Navigation" className="hidden lg:flex items-center gap-1 xl:gap-2">
+              {NAV_ITEMS.map((item) => {
+                const hasMega = !!item.megaMenu;
+                const isActive = activeMega === item.key;
+
+                return (
+                  <div
+                    key={item.key}
+                    className="relative"
+                    onMouseEnter={() => hasMega && handleMegaEnter(item.key)}
+                    onMouseLeave={() => hasMega && handleMegaLeave()}
+                  >
+                    {item.href ? (
+                      <Link
+                        href={item.href}
+                        className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs xl:text-sm font-semibold text-gray-700 hover:text-primary-700 hover:bg-primary-50/70 transition-colors"
+                      >
+                        {item.label}
+                        {item.badge && (
+                          <span className={`text-[9px] font-bold text-white px-1.5 py-0.5 rounded-full ${item.badgeColor}`}>
+                            {item.badge}
+                          </span>
+                        )}
+                      </Link>
+                    ) : (
+                      <button
+                        className={`flex items-center gap-1 px-3 py-2 rounded-xl text-xs xl:text-sm font-semibold transition-colors ${
+                          isActive
+                            ? 'text-primary-700 bg-primary-50'
+                            : 'text-gray-700 hover:text-primary-700 hover:bg-primary-50/70'
+                        }`}
+                        aria-expanded={isActive}
+                        aria-haspopup="true"
+                      >
+                        {item.label}
+                        <FiChevronDown
+                          className={`w-3.5 h-3.5 transition-transform duration-200 ${isActive ? 'rotate-180 text-primary-600' : 'text-gray-400'}`}
+                        />
+                      </button>
+                    )}
+
+                    {/* Mega menu */}
+                    {hasMega && item.megaMenu && (
+                      <MegaMenuPanel groups={item.megaMenu} isOpen={isActive} />
+                    )}
+                  </div>
+                );
+              })}
+            </nav>
+
+            {/* 3. CENTER-RIGHT: Search Bar */}
+            <div className="hidden md:flex flex-1 max-w-xs xl:max-w-sm 2xl:max-w-md">
               <SearchBar />
             </div>
 
-            {/* RIGHT: Icons */}
-            <div className="flex items-center gap-1 sm:gap-2">
+            {/* 4. RIGHT: Actions (Wishlist, Cart, Account) */}
+            <div className="flex items-center gap-1 sm:gap-2 shrink-0">
               {/* Search — visible on mobile only */}
               <div className="md:hidden">
                 <SearchBar />
@@ -307,74 +355,6 @@ export default function Header() {
             </div>
           </div>
         </div>
-
-        {/* ── Navigation row — desktop only ── */}
-        <nav
-          aria-label="Main navigation"
-          className="hidden lg:block border-t border-gray-100"
-        >
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <ul className="flex items-center h-11 gap-1">
-              {NAV_ITEMS.map((item) => {
-                const hasMega = !!item.megaMenu;
-                const isActive = activeMega === item.key;
-
-                return (
-                  <li
-                    key={item.key}
-                    className="relative"
-                    onMouseEnter={() => hasMega && handleMegaEnter(item.key)}
-                    onMouseLeave={() => hasMega && handleMegaLeave()}
-                  >
-                    {item.href ? (
-                      <Link
-                        href={item.href}
-                        className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium text-gray-700 hover:text-primary-700 hover:bg-primary-50 transition-colors"
-                      >
-                        {item.label}
-                        {item.badge && (
-                          <span className={`text-[9px] font-bold text-white px-1.5 py-0.5 rounded ${item.badgeColor}`}>
-                            {item.badge}
-                          </span>
-                        )}
-                      </Link>
-                    ) : (
-                      <button
-                        className={`flex items-center gap-1 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                          isActive
-                            ? 'text-primary-700 bg-primary-50'
-                            : 'text-gray-700 hover:text-primary-700 hover:bg-primary-50'
-                        }`}
-                        aria-expanded={isActive}
-                        aria-haspopup="true"
-                      >
-                        {item.label}
-                        <FiChevronDown
-                          className={`w-3.5 h-3.5 transition-transform duration-200 ${isActive ? 'rotate-180 text-primary-600' : 'text-gray-400'}`}
-                        />
-                      </button>
-                    )}
-
-                    {/* Mega menu */}
-                    {hasMega && item.megaMenu && (
-                      <MegaMenuPanel groups={item.megaMenu} isOpen={isActive} />
-                    )}
-                  </li>
-                );
-              })}
-
-              {/* Divider + extra utility links */}
-              <li className="ml-auto flex items-center gap-3">
-                <Link href="/track-order" className="text-xs text-gray-500 hover:text-primary-600 transition-colors flex items-center gap-1">
-                  📦 Track Order
-                </Link>
-                <Link href="/contact" className="text-xs text-gray-500 hover:text-primary-600 transition-colors">
-                  Contact
-                </Link>
-              </li>
-            </ul>
-          </div>
-        </nav>
       </header>
 
       {/* ─── Mobile Menu Drawer ─── */}

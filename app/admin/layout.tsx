@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation';
 import {
   FiHome,
   FiShoppingBag,
+  FiPlusCircle,
   FiPackage,
   FiLayers,
   FiUsers,
@@ -19,11 +20,11 @@ import {
 
 const NAV_ITEMS = [
   { label: 'Overview', href: '/admin/dashboard', icon: FiHome },
-  { label: 'Products', href: '/admin/products', icon: FiShoppingBag },
-  { label: 'Orders', href: '/admin/orders', icon: FiPackage },
-  { label: 'Inventory System', href: '/admin/inventory', icon: FiLayers, badge: 'Live' },
-  { label: 'Customers', href: '/admin/customers', icon: FiUsers },
-  { label: 'Settings', href: '/admin/settings', icon: FiSettings },
+  { label: 'All Products', href: '/admin/products', icon: FiShoppingBag },
+  { label: 'Add Product', href: '/admin/products/new', icon: FiPlusCircle, badge: 'New' },
+  { label: 'Stock Management', href: '/admin/inventory', icon: FiLayers, badge: 'Live' },
+  { label: 'Orders & Courier', href: '/admin/orders', icon: FiPackage },
+  { label: 'Users & Staff', href: '/admin/users', icon: FiUsers },
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {

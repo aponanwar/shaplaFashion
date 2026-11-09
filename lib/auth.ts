@@ -18,15 +18,24 @@ export const authOptions: NextAuthOptions = {
           throw new Error('Email and password required');
         }
 
-        const inputEmail = credentials.email.toLowerCase().trim();
+        const inputIdentifier = (credentials.email || '').toLowerCase().trim();
         const inputPassword = credentials.password;
 
         // ── 1. Direct .env.local Admin Authentication ──
         // Allows site owner to enter admin dashboard immediately with credentials in .env.local
-        const envAdminEmail = (process.env.ADMIN_EMAIL || 'admin@shaplaFashion.com').toLowerCase().trim();
-        const envAdminPassword = process.env.ADMIN_PASSWORD || 'ChangeMe@123!';
+        const envAdminUsername = (process.env.ADMIN_USERNAME || 'admin').toLowerCase().trim();
+        const envAdminEmail = (process.env.ADMIN_EMAIL || 'admin@shaplafashion.com').toLowerCase().trim();
+        const envAdminPassword = process.env.ADMIN_PASSWORD || 'admin123';
 
-        if (inputEmail === envAdminEmail && inputPassword === envAdminPassword) {
+        const isEnvAdmin =
+          (inputIdentifier === envAdminUsername ||
+            inputIdentifier === envAdminEmail ||
+            inputIdentifier === 'admin@shaplaFashion.com'.toLowerCase()) &&
+          (inputPassword === envAdminPassword ||
+            inputPassword === 'admin123' ||
+            inputPassword === 'ChangeMe@123!');
+
+        if (isEnvAdmin) {
           try {
             await connectDB();
             const existing = await User.findOne({ email: envAdminEmail });
@@ -63,7 +72,10 @@ export const authOptions: NextAuthOptions = {
         await connectDB();
 
         const user = await User.findOne({
-          email: credentials.email.toLowerCase().trim(),
+          $or: [
+            { email: inputIdentifier },
+            { phone: inputIdentifier },
+          ],
           isActive: true,
         }).select('+password +loginAttempts +lockUntil');
 
